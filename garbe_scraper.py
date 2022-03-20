@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 from termcolor import colored
 from database import db
+from project_dict import project_dictionary
 
 
 # TODO: Remember, the class name important now are: @data-category and @class="col-md-4".
@@ -12,12 +13,9 @@ def garbe_scraper(class_name: str,
                   browser):
     # step 1: Structure dictionary to input in MongoDB database collection
     current_time = datetime.now().strftime('%d%m%Y')
-    project_dictionary = {"project_name": "",
-                          "project_location": "",
-                          "customer": "GARBE Immobilien-Projekte",
-                          "project_information": "",
-                          "scraping_date": current_time,
-                          "link": ""}
+    project_dict = project_dictionary
+    project_dict["customer"] = "GARBE Immobilien-Projekte"
+    project_dict["scraping_date"] = current_time
 
     # step 2: use selenium chrome driver to fetch data related to projects
     current_containers = browser.find_elements(by=By.XPATH,

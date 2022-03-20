@@ -5,16 +5,14 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 from termcolor import colored
 from database import db
+from project_dict import project_dictionary
 
 
 def rosa_scraper(browser):
     current_time = datetime.now().strftime('%d%m%Y')
-    project_dictionary = {"project_name": "",
-                          "project_location": "",
-                          "customer": "ROSA-ALSCHER Group",
-                          "project_information": "",
-                          "scraping_date": current_time,
-                          "link": ""}
+    project_dict = project_dictionary
+    project_dict["customer"] = "ROSA-ALSCHER Group"
+    project_dict["scraping_date"] = current_time
     project_name_links = browser.find_elements(by=By.XPATH,
                                                value=f'.//div[@class="image_container"]')
     # pprint(project_name_links)
