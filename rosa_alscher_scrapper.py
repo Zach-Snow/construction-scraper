@@ -35,14 +35,14 @@ def rosa_scraper(browser):
         project_location = browser.find_element(by=By.XPATH,
                                                 value='.//*[@id="portfolio-details"]/div/div/h2').text
         table_rows = browser.find_elements(By.TAG_NAME, "tr")
-        intrim_value = ""
+        interim_value = ""
         for rows in table_rows:
             attribute_name = rows.find_elements(by=By.TAG_NAME, value="td")[0].text
             attribute_value = rows.find_elements(by=By.TAG_NAME, value="td")[1].text
-            intrim_value = f"{intrim_value} {attribute_name} {attribute_value}"
+            interim_value = f"{interim_value} {attribute_name} {attribute_value}"
         project_dictionary["project_location"] = project_location
         project_dictionary["project_name"] = project_name
         project_dictionary["link"] = link
-        project_dictionary["project_information"] = intrim_value
+        project_dictionary["project_information"] = interim_value
         return_list.append(project_dictionary)
     return return_list
