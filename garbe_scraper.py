@@ -1,21 +1,16 @@
 import selenium
 from time import sleep
 from pprint import pprint
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from datetime import datetime
 from termcolor import colored
 from database import db
-
-chrome_options = Options()
-chrome_options.headless = True
-chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-browser = webdriver.Chrome(options=chrome_options)
+from driver_setup import set_driver
 
 
 # TODO: Remember, the class name important now are: @data-category and @class="col-md-4".
-def garbe_scraper(class_name: str):
+def garbe_scraper(class_name: str,
+                  browser):
     # step 1: Structure dictionary to input in MongoDB database collection
     current_time = datetime.now().strftime('%d%m%Y')
     project_dictionary = {"project_name": "",
@@ -25,8 +20,6 @@ def garbe_scraper(class_name: str):
                           "scraping_date": current_time}
 
     # step 2: use selenium chrome driver to fetch data related to projects
-    url = "https://www.garbe-immobilien-projekte.de/projekte/"
-    browser.get(url)
     current_containers = browser.find_elements(by=By.XPATH,
                                                value=f'.//div[{class_name}]')
     raw_project_link_list = []
@@ -60,7 +53,6 @@ def garbe_scraper(class_name: str):
             pprint(project_dictionary)
     elif class_name == "@data-category":
         for link in final_link_list:
-            sleep(3)
             browser.get(link)
             project_location = browser.find_element(by=By.XPATH,
                                                     value='.//*[@id="main"]/div/div[3]/div/div[2]/header/h1').text
@@ -74,9 +66,4 @@ def garbe_scraper(class_name: str):
             return_list.append(project_dictionary)
             pprint(project_dictionary)
 
-    elif class_name == "cleanup":
-        browser.quit()
-        return "Selenium webdriver has been stopped! You need to relaunch api again to start."
-
-    # browser.quit()
     return return_list
