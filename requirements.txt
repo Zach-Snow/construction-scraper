@@ -16,3 +16,4 @@ coloredlogs
 mypy
 shutup
 hjson
+Flask-RESTful
