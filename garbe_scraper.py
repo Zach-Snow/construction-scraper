@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 from termcolor import colored
 from database import db
-from driver_setup import set_driver
 
 
 # TODO: Remember, the class name important now are: @data-category and @class="col-md-4".
@@ -17,7 +16,8 @@ def garbe_scraper(class_name: str,
                           "project_location": "",
                           "customer": "GARBE Immobilien-Projekte",
                           "project_information": "",
-                          "scraping_date": current_time}
+                          "scraping_date": current_time,
+                          "link": ""}
 
     # step 2: use selenium chrome driver to fetch data related to projects
     current_containers = browser.find_elements(by=By.XPATH,
@@ -49,6 +49,7 @@ def garbe_scraper(class_name: str,
             project_dictionary["project_information"] = table
             project_dictionary["project_location"] = project_location
             project_dictionary["project_name"] = project_name
+            project_dictionary["link"] = link
             return_list.append(project_dictionary)
             pprint(project_dictionary)
     elif class_name == "@data-category":
@@ -63,6 +64,7 @@ def garbe_scraper(class_name: str,
             project_dictionary["project_information"] = table
             project_dictionary["project_location"] = project_location
             project_dictionary["project_name"] = project_name
+            project_dictionary["link"] = link
             return_list.append(project_dictionary)
             pprint(project_dictionary)
 
