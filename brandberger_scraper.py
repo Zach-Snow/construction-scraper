@@ -1,11 +1,6 @@
-import selenium
-from time import sleep
-from pprint import pprint
-from selenium.webdriver.common.by import By
 from datetime import datetime
-from termcolor import colored
+from selenium.webdriver.common.by import By
 from database import db
-from project_dict import project_dictionary
 
 
 # TODO: This one is a lot more complicated as there is no native data available for this companies portfolio
@@ -42,10 +37,34 @@ def brandberger_scraper(browser):
                     raw_data = project_information[i].get_attribute('innerHTML')
                     class_name = project_information[i].get_attribute('class')
                     interim_value = f"{interim_value} {class_name}: {raw_data} "
-                print("interim_value :", interim_value)
-                return_list[name_counter-1]["project_information"] = interim_value
+                return_list[name_counter - 1]["project_information"] = interim_value
                 project_info_counter = project_info_counter + 5
                 name_counter = name_counter + 1
             except IndexError:
+                database(action_bool=False, return_list=return_list)
                 return return_list
-        return return_list
+    database(action_bool=False, return_list=return_list)
+    return return_list
+
+
+def database(action_bool: bool, return_list: list):
+    if return_list:
+        for data in return_list:
+            project_dictionary = data
+            # TODO: The pop has to be done to remove Duplicate ID error in pymongo
+            try:
+                project_dictionary.pop('_id')
+            except KeyError:
+                pass
+
+            if not action_bool:
+                brandenberg_db_data = db.brandenberg_projects.find_one(
+                    {"project_name": project_dictionary["project_name"],
+                     "project_information": project_dictionary["project_information"]},
+                    {"_id": False}
+                )
+                if not brandenberg_db_data:
+                    db.brandenberg_projects.insert_one(project_dictionary)
+    elif action_bool and not return_list:
+        brandenberg_db_data = list(db.brandenberg_projects.find({}, {"_id": False}))
+        return brandenberg_db_data
