@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api
 from garbe_scraper import garbe_scraper
 from time import sleep
@@ -9,6 +9,17 @@ from brandberger_scraper import brandberger_scraper
 
 app = Flask(__name__)
 api = Api(app)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/')
+def index():
+    return render_template("index.html")
 
 
 @app.route('/garbe_new', methods=['GET'])
