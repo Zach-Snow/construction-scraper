@@ -8,6 +8,7 @@ from driver_setup import set_driver
 from rosa_alscher_scrapper import rosa_scraper
 from brandberger_scraper import brandberger_scraper
 from apscheduler.schedulers.background import BackgroundScheduler
+from garbe_scraper import database
 
 app = Flask(__name__)
 api = Api(app)
@@ -56,6 +57,12 @@ def brandberger():
     return jsonify(result)
 
 
+@app.route('/garbe_database', methods=['GET'])
+def garbe_database():
+    result = database(action_bool=True, project_dictionary={})
+    return jsonify(result)
+
+
 # handling the automatic data fetch for a period, I have used 1 week here
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=get_garbe_old, trigger="interval", days=7)
@@ -63,7 +70,6 @@ scheduler.add_job(func=get_garbe_new, trigger="interval", days=7)
 scheduler.add_job(func=rosa_all, trigger="interval", days=7)
 scheduler.add_job(func=brandberger, trigger="interval", days=7)
 scheduler.start()
-
 
 # Shutting down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
