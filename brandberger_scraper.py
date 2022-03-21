@@ -17,15 +17,20 @@ def brandberger_scraper(browser):
     current_containers = browser.find_elements(by=By.XPATH,
                                                value=f'.//div[@id="projects"]')
     for item in current_containers:
-        project_name_links = item.find_elements(by=By.XPATH,
-                                                value='.//a[@href]')
         project_information = item.find_elements(by=By.XPATH,
                                                  value='.//p[@class]')
+        project_names = item.find_elements(by=By.TAG_NAME,
+                                           value='h3')
+
+        for project_name in project_names:
+            name = project_name.get_attribute('innerHTML')
+            print("name:", name)
         interim_value = ""
         for information in project_information:
             raw_data = information.get_attribute('innerHTML')
             class_name = information.get_attribute('class')
             interim_value = f"{class_name}: {raw_data} "
+            # print("project name: ", project_name)
             print(interim_value)
 
         # for href in project_name_links:
