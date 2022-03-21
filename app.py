@@ -4,6 +4,8 @@ from flask_restful import Api
 from garbe_scraper import garbe_scraper
 from time import sleep
 from driver_setup import set_driver
+from rosa_alscher_scrapper import rosa_scraper
+from brandberger_scraper import brandberger_scraper
 
 app = Flask(__name__)
 api = Api(app)
@@ -25,13 +27,22 @@ def get_garbe_old():
     return jsonify(result)
 
 
-# @app.route('/cleanup', methods=['GET'])
-# def cleanup():
-#     result = garbe_scraper(class_name="cleanup", browser=browser)
-#     return jsonify(result)
+@app.route('/rosa_all', methods=['GET'])
+def rosa_all():
+    browser = set_driver("https://rosa-alscher.com/en/projects.html")
+    result = rosa_scraper(browser=browser)
+    browser.quit()
+    return jsonify(result)
+
+
+@app.route('/brandberger', methods=['GET'])
+def brandberger():
+    browser = set_driver("https://www.brandberger.com/en/#references")
+    result = brandberger_scraper(browser=browser)
+    browser.quit()
+    return jsonify(result)
 
 
 # run Server
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001, debug=True)
-
