@@ -8,7 +8,8 @@ from driver_setup import set_driver
 from rosa_alscher_scrapper import rosa_scraper
 from brandberger_scraper import brandberger_scraper
 from apscheduler.schedulers.background import BackgroundScheduler
-from garbe_scraper import database
+from garbe_scraper import database as GB
+from rosa_alscher_scrapper import database as RA
 
 app = Flask(__name__)
 api = Api(app)
@@ -59,7 +60,13 @@ def brandberger():
 
 @app.route('/garbe_database', methods=['GET'])
 def garbe_database():
-    result = database(action_bool=True, project_dictionary={})
+    result = GB(action_bool=True, project_dictionary={})
+    return jsonify(result)
+
+
+@app.route('/rosa_database', methods=['GET'])
+def rosa_database():
+    result = RA(action_bool=True, project_dictionary={})
     return jsonify(result)
 
 
