@@ -2,7 +2,6 @@
 Flask
 Werkzeug
 aiohttp
-bs4
 cloudscraper
 pymongo
 python_dotenv
@@ -17,3 +16,4 @@ mypy
 shutup
 hjson
 Flask-RESTful
+APScheduler

@@ -1,4 +1,45 @@
 {% extends "layout.html" %}
 {% block head %}
 {{super()}}
+<style>
+.submit {
+  width: 30%;
+  border-collapse: collapse;
+  background-color: white;
+  text-align:center
+}
+h1 {
+  text-align: center;
+}
+p {
+  text-align: center;
+}
+
+</style>
+
+
+<h1>
+    Welcome to Scraper for Alasco customer data
+</h1>
+<p>
+    An Scheduler has been configured to run all the endpoints at least once a week, however, the endpoints can also be run manually as well using the buttons below.
+</p>
+<div style="text-align:center">
+    <form action="/garbe_new" method="get">
+        <button name="garbeNew" class="submit" type="submit">Garbe Ongoing</button>
+    </form>
+
+    <form action="/garbe_old" method="get">
+        <button name="garbeOld" class="submit" type="submit">Garbe Old</button>
+    </form>
+
+    <form action="/rosa_all" method="get">
+        <button name="rosaAll" class="submit" type="submit">Rosa Alscher</button>
+    </form>
+
+
+    <form action="/brandberger" method="get">
+        <button name="brandberger" class="submit" type="submit">Brandenberger</button>
+    </form>
+</div>
 {% endblock %}

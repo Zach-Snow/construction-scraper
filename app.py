@@ -1,4 +1,5 @@
 import os
+import atexit
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api
 from garbe_scraper import garbe_scraper
@@ -6,6 +7,7 @@ from time import sleep
 from driver_setup import set_driver
 from rosa_alscher_scrapper import rosa_scraper
 from brandberger_scraper import brandberger_scraper
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 api = Api(app)
@@ -53,6 +55,18 @@ def brandberger():
     browser.quit()
     return jsonify(result)
 
+
+# handling the automatic data fetch for a period, I have used 1 week here
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=get_garbe_old, trigger="interval", days=7)
+scheduler.add_job(func=get_garbe_new, trigger="interval", days=7)
+scheduler.add_job(func=rosa_all, trigger="interval", days=7)
+scheduler.add_job(func=brandberger, trigger="interval", days=7)
+scheduler.start()
+
+
+# Shutting down the scheduler when exiting the app
+atexit.register(lambda: scheduler.shutdown())
 
 # run Server
 if __name__ == '__main__':
