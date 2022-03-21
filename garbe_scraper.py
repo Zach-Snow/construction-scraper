@@ -29,7 +29,7 @@ def garbe_scraper(class_name: str,
             raw_project_link_list.append(link)
 
     final_link_list = list(set(raw_project_link_list))
-    pprint(final_link_list)
+    # pprint(final_link_list)
     return_list = []
     if class_name == '@class="col-md-4"':
         for link in final_link_list:
@@ -49,7 +49,8 @@ def garbe_scraper(class_name: str,
             project_dictionary["project_name"] = project_name
             project_dictionary["link"] = link
             return_list.append(project_dictionary)
-            pprint(project_dictionary)
+            database(action_bool=False, project_dictionary=project_dictionary)
+
     elif class_name == "@data-category":
         for link in final_link_list:
             browser.get(link)
@@ -64,6 +65,25 @@ def garbe_scraper(class_name: str,
             project_dictionary["project_name"] = project_name
             project_dictionary["link"] = link
             return_list.append(project_dictionary)
-            pprint(project_dictionary)
+            # pprint(project_dictionary)
 
     return return_list
+
+
+def database(action_bool: bool, project_dictionary: dict):
+    # TODO: The pop has to be done to remove Duplicate ID error in pymongo
+    try:
+        project_dictionary.pop('_id')
+    except KeyError:
+        pass
+    if not action_bool:
+        garbe_db_data = db.garbe_projects.find_one(
+            {"project_name": project_dictionary["project_name"],
+             "project_location": project_dictionary["project_location"]},
+            {"_id": False}
+        )
+        if not garbe_db_data:
+            db.garbe_projects.insert_one(project_dictionary)
+    elif action_bool and not project_dictionary:
+        garbe_db_data = list(db.garbe_projects.find({}, {"_id": False}))
+        return garbe_db_data

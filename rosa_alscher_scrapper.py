@@ -42,5 +42,25 @@ def rosa_scraper(browser):
         project_dictionary["project_name"] = project_name
         project_dictionary["link"] = link
         project_dictionary["project_information"] = interim_value
+        database(action_bool=False, project_dictionary=project_dictionary)
         return_list.append(project_dictionary)
     return return_list
+
+
+def database(action_bool: bool, project_dictionary: dict):
+    # TODO: The pop has to be done to remove Duplicate ID error in pymongo
+    try:
+        project_dictionary.pop('_id')
+    except KeyError:
+        pass
+    if not action_bool:
+        rosa_alscher_db_data = db.rosa_alscher_projects.find_one(
+            {"project_name": project_dictionary["project_name"],
+             "project_location": project_dictionary["project_location"]},
+            {"_id": False}
+        )
+        if not rosa_alscher_db_data:
+            db.rosa_alscher_projects.insert_one(project_dictionary)
+    elif action_bool and not project_dictionary:
+        rosa_alscher_db_data = list(db.rosa_alscher_projects.find({}, {"_id": False}))
+        return rosa_alscher_db_data
