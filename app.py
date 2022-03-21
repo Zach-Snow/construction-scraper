@@ -14,6 +14,7 @@ from brandberger_scraper import database as branden_db
 
 app = Flask(__name__)
 api = Api(app)
+scheduler = BackgroundScheduler()
 
 
 @app.route('/favicon.ico')
@@ -77,16 +78,19 @@ def brandenberg_database():
     return jsonify(result)
 
 
+def batch_job():
+    get_garbe_new()
+
+
 # handling the automatic data fetch for a period, I have used 1 week here
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=get_garbe_old, trigger="interval", days=7)
-scheduler.add_job(func=get_garbe_new, trigger="interval", days=7)
-scheduler.add_job(func=rosa_all, trigger="interval", days=7)
-scheduler.add_job(func=brandberger, trigger="interval", days=7)
-scheduler.start()
+# scheduler.add_job(func=get_garbe_old, trigger="interval", days=7)
+# scheduler.add_job(func=get_garbe_new, trigger="interval", seconds=7)
+# scheduler.add_job(func=rosa_all, trigger="interval", days=7)
+# scheduler.add_job(func=brandberger, trigger="interval", days=7)
+# scheduler.start()
 
 # Shutting down the scheduler when exiting the app
-atexit.register(lambda: scheduler.shutdown())
+# atexit.register(lambda: scheduler.shutdown())
 
 # run Server
 if __name__ == '__main__':
