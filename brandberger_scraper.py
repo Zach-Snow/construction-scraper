@@ -16,12 +16,18 @@ def brandberger_scraper(browser):
     project_dict["scraping_date"] = current_time
     current_containers = browser.find_elements(by=By.XPATH,
                                                value=f'.//div[@id="projects"]')
-    # final_link_list = list(set(project_name_links))
-    pprint(current_containers)
-    button = browser.find_element(value='//*[@id="projects"]/ul/li[2]/a')
     for item in current_containers:
         project_name_links = item.find_elements(by=By.XPATH,
                                                 value='.//a[@href]')
-        for href in project_name_links:
-            link = href.get_attribute("href")
-            print(link)
+        project_information = item.find_elements(by=By.XPATH,
+                                                 value='.//p[@class]')
+        interim_value = ""
+        for information in project_information:
+            raw_data = information.get_attribute('innerHTML')
+            class_name = information.get_attribute('class')
+            interim_value = f"{class_name}: {raw_data} "
+            print(interim_value)
+
+        # for href in project_name_links:
+        #     link = href.get_attribute("href")
+        #     print(link)
