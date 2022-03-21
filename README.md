@@ -15,3 +15,5 @@ Chrome driver needs to be configured before running.
 `pip install -r requirements.txt` To install packages from requirements text file.
 
 `python app.py` To initiate the flask app.
+
+You also need an env file with MongoDB credentials.
