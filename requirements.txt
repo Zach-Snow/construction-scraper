@@ -17,3 +17,5 @@ shutup
 hjson
 Flask-RESTful
 APScheduler
+Flask-APScheduler
+schedule
