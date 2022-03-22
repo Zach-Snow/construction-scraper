@@ -107,7 +107,7 @@ def scheduler_job():
 # run Server
 if __name__ == '__main__':
     scheduler = APScheduler()
-    scheduler.add_job(func=scheduler_job, trigger='interval', id='job', seconds=15)
+    scheduler.add_job(func=scheduler_job, trigger='interval', id='job', days=7)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
     app.run(host="0.0.0.0", port=5001, debug=True)
