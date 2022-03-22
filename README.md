@@ -4,6 +4,8 @@ Namely, GARBE Immobilien-Projekte, BRAND BERGER real estate consulting and Rosa-
 The Flask app has to be run in Windows environment as the selenium webdriver might create conflict with WSL or native Linux environment.
 Chrome driver needs to be configured before running.
 
+`main` branch is the stable build.
+
 ## Relevant Commands
 
 `python -m venv venv` To create a virtual Environment named venv.

@@ -1,20 +1,26 @@
 import os
 import atexit
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from pprint import pprint
+from flask import Flask, \
+    send_from_directory, \
+    render_template
+from flask import jsonify
 from flask_restful import Api
 from garbe_scraper import garbe_scraper
 from time import sleep
 from driver_setup import set_driver
 from rosa_alscher_scrapper import rosa_scraper
 from brandberger_scraper import brandberger_scraper
-from apscheduler.schedulers.background import BackgroundScheduler
 from garbe_scraper import database as garbe_db
 from rosa_alscher_scrapper import database as rosa_db
 from brandberger_scraper import database as branden_db
+from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
 api = Api(app)
-scheduler = BackgroundScheduler()
+garbe_link = "https://www.garbe-immobilien-projekte.de/projekte/"
+rosa_link = "https://rosa-alscher.com/en/projects.html"
+brand_berger_link = "https://www.brandberger.com/en/#references"
 
 
 @app.route('/favicon.ico')
@@ -30,7 +36,7 @@ def index():
 
 @app.route('/garbe_new', methods=['GET'])
 def get_garbe_new():
-    browser = set_driver("https://www.garbe-immobilien-projekte.de/projekte/")
+    browser = set_driver(garbe_link)
     result = garbe_scraper(class_name='@class="col-md-4"', browser=browser)
     browser.quit()
     return jsonify(result)
@@ -38,7 +44,7 @@ def get_garbe_new():
 
 @app.route('/garbe_old', methods=['GET'])
 def get_garbe_old():
-    browser = set_driver("https://www.garbe-immobilien-projekte.de/projekte/")
+    browser = set_driver(garbe_link)
     result = garbe_scraper(class_name='@data-category', browser=browser)
     browser.quit()
     return jsonify(result)
@@ -46,7 +52,7 @@ def get_garbe_old():
 
 @app.route('/rosa_all', methods=['GET'])
 def rosa_all():
-    browser = set_driver("https://rosa-alscher.com/en/projects.html")
+    browser = set_driver(rosa_link)
     result = rosa_scraper(browser=browser)
     browser.quit()
     return jsonify(result)
@@ -54,7 +60,7 @@ def rosa_all():
 
 @app.route('/brandberger', methods=['GET'])
 def brandberger():
-    browser = set_driver("https://www.brandberger.com/en/#references")
+    browser = set_driver(brand_berger_link)
     result = brandberger_scraper(browser=browser)
     browser.quit()
     return jsonify(result)
@@ -78,20 +84,30 @@ def brandenberg_database():
     return jsonify(result)
 
 
-def batch_job():
-    get_garbe_new()
+# call scheduler functions
+def scheduler_job():
+    browser = set_driver(garbe_link)
+    garbe_scraper(class_name='@class="col-md-4"', browser=browser)
+    browser.quit()
+    sleep(30)
+    browser = set_driver(garbe_link)
+    garbe_scraper(class_name='@data-category', browser=browser)
+    browser.quit()
+    sleep(30)
+    browser = set_driver(rosa_link)
+    rosa_scraper(browser=browser)
+    browser.quit()
+    sleep(30)
+    browser = set_driver(brand_berger_link)
+    brandberger_scraper(browser=browser)
+    browser.quit()
+    sleep(30)
 
-
-# handling the automatic data fetch for a period, I have used 1 week here
-# scheduler.add_job(func=get_garbe_old, trigger="interval", days=7)
-# scheduler.add_job(func=get_garbe_new, trigger="interval", seconds=7)
-# scheduler.add_job(func=rosa_all, trigger="interval", days=7)
-# scheduler.add_job(func=brandberger, trigger="interval", days=7)
-# scheduler.start()
-
-# Shutting down the scheduler when exiting the app
-# atexit.register(lambda: scheduler.shutdown())
 
 # run Server
 if __name__ == '__main__':
+    scheduler = APScheduler()
+    scheduler.add_job(func=scheduler_job, trigger='interval', id='job', days=7)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
     app.run(host="0.0.0.0", port=5001, debug=True)
