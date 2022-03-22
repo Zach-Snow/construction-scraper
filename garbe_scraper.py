@@ -65,6 +65,7 @@ def garbe_scraper(class_name: str,
             project_dictionary["project_name"] = project_name
             project_dictionary["link"] = link
             return_list.append(project_dictionary)
+            database(action_bool=False, project_dictionary=project_dictionary)
             # pprint(project_dictionary)
 
     return return_list
