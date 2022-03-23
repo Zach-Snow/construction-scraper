@@ -18,11 +18,9 @@ def brandberger_scraper(browser):
         #  Each dictionary value has to be created separately to put in the same list.
         for project_name in project_names:
             project_dict = {"project_name": "",
-                            "customer": "",
+                            "customer": "BRAND BERGER GmbH & Co. KG",
                             "project_information": "",
-                            "scraping_date": ""}
-            project_dict["customer"] = "BRAND BERGER GmbH & Co. KG"
-            project_dict["scraping_date"] = current_time
+                            "scraping_date": current_time}
             name = project_name.get_attribute('innerHTML')
             project_dict["project_name"] = name
             return_list.append(project_dict)
