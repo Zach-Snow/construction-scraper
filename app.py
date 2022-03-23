@@ -23,6 +23,7 @@ rosa_link = "https://rosa-alscher.com/en/projects.html"
 brand_berger_link = "https://www.brandberger.com/en/#references"
 
 
+# Endpoints Routes
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
@@ -36,33 +37,25 @@ def index():
 
 @app.route('/garbe_new', methods=['GET'])
 def get_garbe_new():
-    browser = set_driver(garbe_link)
-    result = garbe_scraper(class_name='@class="col-md-4"', browser=browser)
-    browser.quit()
+    result = garbe_call(class_name='@class="col-md-4"')
     return jsonify(result)
 
 
 @app.route('/garbe_old', methods=['GET'])
 def get_garbe_old():
-    browser = set_driver(garbe_link)
-    result = garbe_scraper(class_name='@data-category', browser=browser)
-    browser.quit()
+    result = garbe_call(class_name='@data-category')
     return jsonify(result)
 
 
 @app.route('/rosa_all', methods=['GET'])
 def rosa_all():
-    browser = set_driver(rosa_link)
-    result = rosa_scraper(browser=browser)
-    browser.quit()
+    result = rosa_call()
     return jsonify(result)
 
 
 @app.route('/brandberger', methods=['GET'])
 def brandberger():
-    browser = set_driver(brand_berger_link)
-    result = brandberger_scraper(browser=browser)
-    browser.quit()
+    result = brandberger_call()
     return jsonify(result)
 
 
@@ -84,24 +77,37 @@ def brandenberg_database():
     return jsonify(result)
 
 
+# To repurpose for scheduler and endpoints
+def garbe_call(class_name: str):
+    browser = set_driver(garbe_link)
+    data = garbe_scraper(class_name=class_name, browser=browser)
+    browser.quit()
+    return data
+
+
+def rosa_call():
+    browser = set_driver(rosa_link)
+    data = rosa_scraper(browser=browser)
+    browser.quit()
+    return data
+
+
+def brandberger_call():
+    browser = set_driver(brand_berger_link)
+    data = brandberger_scraper(browser=browser)
+    browser.quit()
+    return data
+
+
 # call scheduler functions
 def scheduler_job():
-    browser = set_driver(garbe_link)
-    garbe_scraper(class_name='@class="col-md-4"', browser=browser)
-    browser.quit()
-    sleep(30)
-    browser = set_driver(garbe_link)
-    garbe_scraper(class_name='@data-category', browser=browser)
-    browser.quit()
-    sleep(30)
-    browser = set_driver(rosa_link)
-    rosa_scraper(browser=browser)
-    browser.quit()
-    sleep(30)
-    browser = set_driver(brand_berger_link)
-    brandberger_scraper(browser=browser)
-    browser.quit()
-    sleep(30)
+    call_list = [garbe_call(class_name='@class="col-md-4"'),
+                 garbe_call(class_name='@data-category'),
+                 rosa_call(),
+                 brandberger_call()]
+    for call in call_list:
+        call
+        sleep(60)
 
 
 # run Server
