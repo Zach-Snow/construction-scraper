@@ -5,14 +5,10 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 from termcolor import colored
 from database import db
-from project_dict import project_dictionary
 
 
 def rosa_scraper(browser):
     current_time = datetime.now().strftime('%d%m%Y')
-    project_dict = project_dictionary
-    project_dict["customer"] = "ROSA-ALSCHER Group"
-    project_dict["scraping_date"] = current_time
     project_name_links = browser.find_elements(by=By.XPATH,
                                                value=f'.//div[@class="image_container"]')
     # pprint(project_name_links)
@@ -25,8 +21,13 @@ def rosa_scraper(browser):
             link = href.get_attribute("href")
             raw_project_link_list.append(link)
     final_link_list = list(set(raw_project_link_list))
-    pprint(final_link_list)
     for link in final_link_list:
+        project_dict = {"project_name": "",
+                        "project_location": "",
+                        "customer": "ROSA-ALSCHER Group",
+                        "project_information": "",
+                        "scraping_date": current_time,
+                        "link": ""}
         browser.get(link)
         project_name = browser.find_element(by=By.XPATH,
                                             value='.//*[@id="portfolio-details"]/div/div/h1').text
@@ -38,12 +39,12 @@ def rosa_scraper(browser):
             attribute_name = rows.find_elements(by=By.TAG_NAME, value="td")[0].text
             attribute_value = rows.find_elements(by=By.TAG_NAME, value="td")[1].text
             interim_value = f"{interim_value} {attribute_name} {attribute_value}"
-        project_dictionary["project_location"] = project_location
-        project_dictionary["project_name"] = project_name
-        project_dictionary["link"] = link
-        project_dictionary["project_information"] = interim_value
-        database(action_bool=False, project_dictionary=project_dictionary)
-        return_list.append(project_dictionary)
+        project_dict["project_location"] = project_location
+        project_dict["project_name"] = project_name
+        project_dict["link"] = link
+        project_dict["project_information"] = interim_value
+        database(action_bool=False, project_dictionary=project_dict)
+        return_list.append(project_dict)
     return return_list
 
 
